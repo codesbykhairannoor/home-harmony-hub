@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
-import { ServiceListing } from "@/types/listing";
+import type { Tables } from "@/integrations/supabase/types";
 import { MapPin, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Props {
-  listing: ServiceListing;
+  listing: Tables<"listings">;
   index?: number;
 }
 
@@ -14,6 +14,8 @@ const ListingCard = ({ listing, index = 0 }: Props) => {
     currency: "IDR",
     minimumFractionDigits: 0,
   }).format(listing.price);
+
+  const images = listing.images ?? [];
 
   return (
     <motion.div
@@ -27,12 +29,18 @@ const ListingCard = ({ listing, index = 0 }: Props) => {
         className="group flex flex-col overflow-hidden rounded-xl border bg-card transition-all card-shadow hover:card-shadow-hover"
       >
         <div className="relative aspect-[4/3] overflow-hidden">
-          <img
-            src={listing.images[0]}
-            alt={listing.title}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
+          {images.length > 0 ? (
+            <img
+              src={images[0]}
+              alt={listing.title}
+              className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+              loading="lazy"
+            />
+          ) : (
+            <div className="h-full w-full bg-muted flex items-center justify-center text-muted-foreground text-sm">
+              No image
+            </div>
+          )}
           <span className="absolute left-3 top-3 rounded-full bg-primary px-3 py-1 text-xs font-medium text-primary-foreground capitalize">
             {listing.category.replace("-", " ")}
           </span>
@@ -41,7 +49,7 @@ const ListingCard = ({ listing, index = 0 }: Props) => {
           <h3 className="mb-1 line-clamp-2 text-sm font-semibold leading-snug group-hover:text-primary transition-colors">
             {listing.title}
           </h3>
-          <p className="mb-2 text-xs text-muted-foreground">{listing.providerName}</p>
+          <p className="mb-2 text-xs text-muted-foreground">{listing.provider_name}</p>
           <div className="mt-auto flex items-center justify-between">
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <MapPin className="h-3 w-3" />
